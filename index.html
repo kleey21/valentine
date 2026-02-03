@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* LIVE WALLPAPER */
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(270deg, #ff9a9e, #fad0c4, #ffdde1);
+    background-size: 600% 600%;
+    animation: gradientMove 20s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating hearts */
+.heart {
+    position: absolute;
+    pointer-events: none;
+    opacity: 0.6;
+    animation: float linear infinite;
+}
+
+@keyframes float {
+    from { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.7; }
+    to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* Card */
+.card {
+    background: rgba(255,255,255,0.95);
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 22px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+h1 { color: #e63946; margin-bottom: 10px; }
+p { font-size: 17px; margin-bottom: 25px; }
+
+/* Buttons */
+.buttons {
+    position: relative;
+    height: 120px;
+}
+
+.btn {
+    padding: 14px 28px;
+    font-size: 16px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-yes {
+    background: linear-gradient(135deg, #e63946, #ff6b6b);
+    color: white;
+    box-shadow: 0 8px 20px rgba(230,57,70,0.5);
+    animation: pulse 2.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(230,57,70,0.5); }
+    70% { box-shadow: 0 0 0 18px rgba(230,57,70,0); }
+    100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); }
+}
+
+.btn-no {
+    position: absolute;
+    left: 60%;
+    top: 60%;
+    background: #ddd;
+}
+
+/* MESSAGE POPUP */
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: rgba(0,0,0,0.35);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.message {
+    background: white;
+    padding: 32px;
+    border-radius: 22px;
+    max-width: 420px;
+    text-align: center;
+    animation: heartbeat 2s infinite;
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    20% { transform: scale(1.05); }
+    40% { transform: scale(1); }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.message p {
+    font-size: 18px;
+    color: #e63946;
+    line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Hey Baby😊</h1>
+    <p>Roses are red, you’re pretty great…<br>will you be my Valentine? 😄</p>
+
+    <div class="buttons">
+        <button class="btn btn-yes" id="yesBtn">💌 Yes</button>
+        <button class="btn btn-no" id="noBtn">❌ No</button>
+    </div>
+</div>
+
+<div class="overlay" id="overlay">
+    <div class="message">
+        <p id="typedText"></p>
+    </div>
+</div>
+
+<!-- MUSIC -->
+<audio id="music" loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7c1b2fbc41.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const body = document.body;
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const overlay = document.getElementById("overlay");
+const typedText = document.getElementById("typedText");
+const music = document.getElementById("music");
+
+const message = "I just want you to know how much I love and appreciate you — for your kindness, your laughter, your patience, and the way you make even ordinary moments feel special. You’re my joy, my peace, and my greatest blessing , happy valentine baby.";
+
+/* BACKGROUND HEARTS */
+for (let i = 0; i < 40; i++) {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = ["💗","💖","💞","💘","❤️"][Math.floor(Math.random()*5)];
+    h.style.left = Math.random()*100 + "vw";
+    h.style.fontSize = 10 + Math.random()*22 + "px";
+    h.style.animationDuration = 6 + Math.random()*8 + "s";
+    h.style.animationDelay = Math.random()*6 + "s";
+    body.appendChild(h);
+}
+
+/* HEART BURST */
+function burst(x,y,count=60){
+    for(let i=0;i<count;i++){
+        const h=document.createElement("div");
+        h.className="heart";
+        h.textContent=["💗","💖","💞","💘","❤️"][Math.floor(Math.random()*5)];
+        h.style.left=x+"px";
+        h.style.top=y+"px";
+        h.style.fontSize=14+Math.random()*20+"px";
+        body.appendChild(h);
+        const a=Math.random()*Math.PI*2;
+        const d=80+Math.random()*140;
+        setTimeout(()=>{
+            h.style.transition="transform .8s ease,opacity .8s";
+            h.style.transform=`translate(${Math.cos(a)*d}px,${Math.sin(a)*d}px) scale(1.5)`;
+            h.style.opacity=0;
+        },10);
+        setTimeout(()=>h.remove(),900);
+    }
+}
+
+/* TYPEWRITER */
+function typeText(text){
+    typedText.textContent="";
+    let i=0;
+    const interval=setInterval(()=>{
+        typedText.textContent+=text[i];
+        i++;
+        if(i>=text.length) clearInterval(interval);
+    },40);
+}
+
+/* YES CLICK */
+yesBtn.onclick=()=>{
+    const r=yesBtn.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2);
+    music.play();
+    setTimeout(()=>{
+        overlay.style.display="flex";
+        typeText(message);
+    },700);
+};
+
+/* NO RUNS AWAY */
+noBtn.onmouseenter=()=>{
+    const p=noBtn.parentElement;
+    noBtn.style.left=Math.random()*(p.clientWidth-100)+"px";
+    noBtn.style.top=Math.random()*(p.clientHeight-40)+"px";
+};
+
+overlay.onclick=()=>overlay.style.display="none";
+</script>
+
+</body>
+</html>
